@@ -1,0 +1,5 @@
+requests>=2.31
+mwparserfromhell>=0.6.6
+tqdm>=4.66
+chromadb>=0.5
+sentence-transformers>=2.5
