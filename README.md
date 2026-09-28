@@ -1,3 +1,9 @@
+# DISCLAIMER
+The below RAG implementation was fully coded by OpenCode Big Pickle free model based on my instructions.
+I didn't add the `.data/` folder, as I plan to change datacollection later. (you need to create one before running the data collection scripts)
+You can use the scripts to build the vector database as described below.
+They take in account the heavy throttling happening on wikipedia and back off as needed.
+
 # Jazzbot — RAG ingestion for a local jazz model
 
 RAG corpus + server to give a local LLM accurate information about jazz
@@ -18,25 +24,6 @@ music: artists, songs, albums, and venues.
    same local model, retrieves the nearest chunks from Chroma, and asks an
    OpenAI-compatible chat endpoint (Ollama, llama.cpp, LM Studio, vLLM, …) to
    answer from that context.
-
-**Status.** All four steps are implemented, and the current `data/` state is
-usable as-is:
-
-| Artifact | State |
-|---|---|
-| `data/manifest.jsonl` | 45,891 articles, walk interrupted mid-crawl by throttling |
-| `data/corpus.jsonl` | 46,882 lines / 45,041 distinct articles fetched |
-| `data/chroma/` | `jazz-corpus-v1`, 170,273 chunks — covers every distinct article in `corpus.jsonl` |
-| `data/api/jazzbot.db` | conversation + audit history |
-| `data/models/` | broken/partial model copy — do not use, see the embed section |
-
-A full depth-5 crawl is still pending — from this throttled network the API
-allows only ~1 request every few seconds, so a full run takes hours. The
-scripts self-pace and are resumable, so they can be restarted and will pick up
-where they stopped. Note that `build_manifest.py` *replaces* `--output` on each
-run, so re-running the crawl against a fresh root set shrinks the manifest to
-whatever that run collected; re-running only `fetch_articles.py` resumes
-against whatever the manifest currently lists.
 
 ## Setup
 
@@ -280,14 +267,4 @@ npm run dev          # http://127.0.0.1:5173 (proxies /api to :3000)
 API at the relative path `/api/...`, so whatever serves `dist/` in production
 must proxy `/api` to the API — Vite's dev proxy handles that locally.
 
-## Deploying
 
-`deployment_plan.md` covers shipping this stack to an on-prem Kubernetes
-cluster: images, PVCs, Ingress, secrets, and a smoke test. This README only
-covers the local dev setup.
-
-## Licensing
-
-Content is CC BY-SA 4.0 (text) / GFDL from Wikipedia. Attribute per the
-license if you redistribute the corpus. Be polite to the API: keep a sane
-sleep interval, back off on 429s.
